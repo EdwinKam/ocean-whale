@@ -8,6 +8,11 @@ java 17
 
 # How to start
 
+1. set up database secret locally
+
+- ask app owner for the secret, put the secret in the root folder
+- [not recommended] Go to firebase console -> project settings -> service accounts -> generate new private key, make sure the json name matches what inside `FirebaseConfig.java`, not sure if everyone else will need to use the new secret
+
 Open intellij, just run the main function in WhaleApplication.java
 
 # How to test
