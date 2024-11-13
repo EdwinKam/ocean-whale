@@ -1,3 +1,8 @@
+# firebase service account secret
+**/ocean-app-a4c89-firebase-adminsdk-urlnl-05c730aa42.json
+.gradle/
+build/
+
 ### AL ###
 #Template for AL projects for Dynamics 365 Business Central
 #launch.json folder
