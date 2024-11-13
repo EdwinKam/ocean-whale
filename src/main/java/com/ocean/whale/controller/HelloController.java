@@ -1,14 +1,58 @@
 package com.ocean.whale.controller;
 
+import com.ocean.whale.service.FirestoreService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api")
 public class HelloController {
+    private final FirestoreService firestoreService;
+
+    @Autowired
+    public HelloController(FirestoreService firestoreService) {
+        this.firestoreService = firestoreService;
+    }
+
     @GetMapping("/hello")
     public String sayHello() {
         return "Hello, World!";
+    }
+
+    @GetMapping("/testdb")
+    public String testDatabaseOperations() {
+        String collectionName = "testCollection";
+        String documentId = "testDocument";
+        Map<String, Object> data = new HashMap<>();
+        data.put("key", "value");
+
+        try {
+            // Add a document
+            String addResult = firestoreService.addDocument(collectionName, documentId, data);
+
+            // Get the document
+            Map<String, Object> retrievedData = firestoreService.getDocument(collectionName, documentId);
+            if (retrievedData == null || !retrievedData.equals(data)) {
+                return "Failure: Document retrieval mismatch.";
+            }
+
+            // Delete the document
+            boolean deleteResult = firestoreService.deleteDocument(collectionName, documentId);
+            if (!deleteResult) {
+                return "Failure: Document deletion failed.";
+            }
+
+            return "Success: Document added, retrieved, and deleted successfully.";
+        } catch (ExecutionException | InterruptedException e) {
+            return "Error during Firestore operations: " + e.getMessage();
+        }
     }
 }
