@@ -1,8 +1,7 @@
 package com.ocean.whale.controller;
 
 import com.ocean.whale.model.Post;
-import com.ocean.whale.service.FirestoreService;
-import com.ocean.whale.service.PostService;
+import com.ocean.whale.service.post.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
