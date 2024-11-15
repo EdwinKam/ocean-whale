@@ -21,6 +21,7 @@ public class AuthController {
         this.googleAuthService = googleAuthService;
     }
 
+    // TODO change to postmapping, move param to header
     @GetMapping("/verify")
     public VerifyAuthResponse verifyAuth(@RequestParam String accessToken) {
         // http://localhost:8080/auth/verify?accessToken=eyJxxxx

@@ -1,6 +1,7 @@
-package com.ocean.whale.service;
+package com.ocean.whale.service.post;
 
 import com.ocean.whale.model.Post;
+import com.ocean.whale.repository.FirestoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
