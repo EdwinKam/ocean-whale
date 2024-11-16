@@ -4,4 +4,5 @@ import java.util.Optional;
 
 public interface AuthService {
     Optional<String> getUid(String accessToken) throws Exception;
+    String getUsername(String uid) throws Exception;
 }
