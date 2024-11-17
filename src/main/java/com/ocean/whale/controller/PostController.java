@@ -22,7 +22,8 @@ public class PostController {
         this.postService = postService;
     }
 
-    @PostMapping("/createPost")
+    // for testing only
+    @PostMapping("/createPostForTesting")
     public String createPost(@RequestParam String content, @RequestParam Integer userId) {
         // curl -X POST "http://localhost:8080/api/createPost" -d "content=Hello" -d "userId=123"
         try {
@@ -33,7 +34,8 @@ public class PostController {
         }
     }
 
-    @GetMapping("/getPosts")
+    // test api only
+    @GetMapping("/getPostsForTesting")
     public List<Map<String, Object>> getPosts() throws Exception {
         return postService.getAllPosts();
     }

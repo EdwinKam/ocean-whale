@@ -6,6 +6,7 @@ import com.ocean.whale.service.auth.GoogleAuthService;
 import com.ocean.whale.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +27,7 @@ public class AuthController {
 
     // TODO change to postmapping, move param to header
     @GetMapping("/verify")
-    public VerifyAuthResponse verifyAuth(@RequestParam String accessToken) {
+    public VerifyAuthResponse verifyAuth(@RequestHeader String accessToken) {
         // http://localhost:8080/auth/verify?accessToken=eyJxxxx
         VerifyAuthResponse verifyAuthResponse = new VerifyAuthResponse();
         try {
