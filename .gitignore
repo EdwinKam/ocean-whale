@@ -4,6 +4,10 @@
 build/
 .DS_Store
 
+#IDE
+**/.vscode/
+**/.idea/
+
 ### AL ###
 #Template for AL projects for Dynamics 365 Business Central
 #launch.json folder
