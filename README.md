@@ -19,3 +19,6 @@ Open intellij, just run the main function in WhaleApplication.java
 # How to test
 
 open browser http://localhost:8080/api/hello. You should see hello world if the server is running properly.
+
+# Swagger
+`http://localhost:8080/swagger-ui/index.html#`
