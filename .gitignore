@@ -3,6 +3,7 @@
 .gradle/
 build/
 .DS_Store
+/bin
 
 #IDE
 **/.vscode/
