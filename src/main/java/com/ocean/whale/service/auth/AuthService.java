@@ -1,29 +1,34 @@
 package com.ocean.whale.service.auth;
 
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
+import java.util.Optional;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-    public Optional<String> getUid(String accessToken) throws Exception {
-        FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(accessToken);
-        return Optional.ofNullable(decodedToken.getUid());
+  // Verifies the token and fetches the UID
+  public String verifyAndFetchUid(String accessToken) throws FirebaseAuthException {
+    FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(accessToken);
+    String uid = decodedToken.getUid();
+
+    if (uid.isBlank()) {
+      throw new IllegalArgumentException("Invalid UID: UID is null or blank");
     }
+    return uid;
+  }
 
-    public Optional<String> getUsername(String uid) throws Exception {
-        UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
+  // Fetches the username for a given UID
+  public Optional<String> getUsername(String uid) throws FirebaseAuthException {
+    UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
+    return Optional.ofNullable(userRecord.getDisplayName());
+  }
 
-        return Optional.ofNullable(userRecord.getDisplayName());
-    }
-
-    public Optional<String> getEmail(String uid) throws Exception {
-        UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
-
-        return Optional.ofNullable(userRecord.getEmail());
-    }
+  // Fetches the email for a given UID
+  public Optional<String> getEmail(String uid) throws FirebaseAuthException {
+    UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
+    return Optional.ofNullable(userRecord.getEmail());
+  }
 }
