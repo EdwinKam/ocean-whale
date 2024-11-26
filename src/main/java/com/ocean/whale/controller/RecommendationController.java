@@ -3,7 +3,7 @@ package com.ocean.whale.controller;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.ocean.whale.model.ApiResponse;
 import com.ocean.whale.service.auth.AuthService;
-import com.ocean.whale.service.recommendation.RecService;
+import com.ocean.whale.service.recommendation.RecommendationService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/rec")
-public class RecController {
-  private final RecService recService;
+@RequestMapping("/api/recommendation")
+public class RecommendationController {
+  private final RecommendationService recommendationService;
 
   private final AuthService authService;
 
   @Autowired
-  public RecController(RecService recService, AuthService authService) {
-    this.recService = recService;
+  public RecommendationController(RecommendationService recommendationService, AuthService authService) {
+    this.recommendationService = recommendationService;
     this.authService = authService;
   }
 
@@ -33,7 +33,7 @@ public class RecController {
       // Verify the token and fetch the user UID
       String uid = authService.verifyAndFetchUid(accessToken);
       // Get recommendations based on the UID
-      List<String> recommendations = recService.getRecommendations(uid);
+      List<String> recommendations = recommendationService.getRecommendations(uid);
 
       return ResponseEntity.ok(
           new ApiResponse(true, "Recommendations retrieved successfully", recommendations));

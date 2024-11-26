@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RecService {
+public class RecommendationService {
   private final FirestoreService firestoreService;
 
   @Autowired
-  public RecService(FirestoreService firestoreService) {
+  public RecommendationService(FirestoreService firestoreService) {
     this.firestoreService = firestoreService;
   }
 
