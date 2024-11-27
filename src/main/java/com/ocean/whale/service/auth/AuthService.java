@@ -1,34 +1,39 @@
 package com.ocean.whale.service.auth;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import java.util.Optional;
+
+import com.ocean.whale.exception.WhaleException;
+import com.ocean.whale.exception.WhaleServiceException;
+import com.ocean.whale.model.AuthCredential;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
   // Verifies the token and fetches the UID
-  public String verifyAndFetchUid(String accessToken) throws FirebaseAuthException {
-    FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(accessToken);
-    String uid = decodedToken.getUid();
+  public String verifyAndFetchUid(String accessToken) throws WhaleServiceException {
+    try {
+      FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(accessToken);
+      String uid = decodedToken.getUid();
 
-    if (uid.isBlank()) {
-      throw new IllegalArgumentException("Invalid UID: UID is null or blank");
+      if (uid.isBlank()) {
+        throw new WhaleServiceException(WhaleException.UNAUTHENTICATED, "empty uid retrieved from firebase", null);
+      }
+      return uid;
+    } catch (Exception e) {
+      throw new WhaleServiceException(WhaleException.UNAUTHENTICATED, "firebase exception", e);
     }
-    return uid;
   }
 
   // Fetches the username for a given UID
-  public Optional<String> getUsername(String uid) throws FirebaseAuthException {
-    UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
-    return Optional.ofNullable(userRecord.getDisplayName());
-  }
-
-  // Fetches the email for a given UID
-  public Optional<String> getEmail(String uid) throws FirebaseAuthException {
-    UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
-    return Optional.ofNullable(userRecord.getEmail());
+  public AuthCredential getAuthCredential(String uid) {
+    try {
+      UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
+      return new AuthCredential(uid, userRecord.getDisplayName(), userRecord.getEmail());
+    } catch (Exception e) {
+      throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, "get auth credential error", e);
+    }
   }
 }
