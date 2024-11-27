@@ -4,8 +4,6 @@ import com.ocean.whale.model.VerifyAuthResponse;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.user.UserService;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -30,20 +28,11 @@ public class AuthController {
 
         // Check if the user is registered; if not, register them
         if (!userService.isUserRegistered(uid)) {
-            registerUser(uid);
+            userService.registerUserWithThirdPartyCredentials(uid);
         }
 
         return new VerifyAuthResponse(true);
     }
 
-    private void registerUser(String uid) {
-        // Fetch username and email
-        Optional<String> usernameOpt = authService.getUsername(uid);
-        Optional<String> emailOpt = authService.getEmail(uid);
 
-        // Use username if available, fallback to email
-        String entry = usernameOpt.orElseGet(() -> emailOpt.orElseThrow(() -> new IllegalArgumentException("Both username and email are missing")));
-
-        userService.createUser(uid, entry);
-    }
 }

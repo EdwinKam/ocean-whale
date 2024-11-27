@@ -1,17 +1,14 @@
 package com.ocean.whale.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Map;
 
 @Setter
 @Getter
-@NoArgsConstructor
-public class User {
+@AllArgsConstructor
+public class AuthCredential {
     String uid;
     String username;
     String email;
-
 }

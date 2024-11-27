@@ -4,8 +4,6 @@ import com.ocean.whale.model.GetRecommendationsResponse;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.recommendation.RecommendationService;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
