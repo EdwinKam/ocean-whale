@@ -1,6 +1,6 @@
 package com.ocean.whale.controller;
 
-import com.ocean.whale.model.VerifyAuthResponse;
+import com.ocean.whale.api.VerifyAuthResponse;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.user.UserService;
 

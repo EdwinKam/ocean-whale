@@ -16,4 +16,14 @@ public class WhaleServiceException extends RuntimeException {
         this.exceptionType = exceptionType;
         this.detailMessage = detailMessage;
     }
+
+    @Override
+    public String getMessage() {
+        return this.exceptionType.toString() + ": " + this.detailMessage;
+    }
+
+    @Override
+    public String toString() {
+        return getMessage();
+    }
 }

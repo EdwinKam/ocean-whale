@@ -1,10 +1,15 @@
 package com.ocean.whale.controller;
 
+import com.ocean.whale.api.GetPostResponse;
 import com.ocean.whale.model.Post;
+import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.post.PostService;
+import com.ocean.whale.service.view_history.ViewHistoryService;
+import org.apache.http.auth.AUTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,21 +18,25 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/post")
 public class PostController {
     private final PostService postService;
+    private final AuthService authService;
+    private final ViewHistoryService viewHistoryService;
 
     @Autowired
-    public PostController(PostService postService) {
+    public PostController(PostService postService, AuthService authService, ViewHistoryService viewHistoryService) {
         this.postService = postService;
+        this.authService = authService;
+        this.viewHistoryService = viewHistoryService;
     }
 
     // for testing only
     @PostMapping("/createPostForTesting")
-    public String createPost(@RequestParam String content, @RequestParam Integer userId) {
+    public String createPostForTesting(@RequestParam String content, @RequestParam String userId) {
         // curl -X POST "http://localhost:8080/api/createPost" -d "content=Hello" -d "userId=123"
         try {
-            postService.createPost(new Post(1, content, userId));
+            postService.createPost(Post.newPost(content, userId));
             return "success creating new post";
         } catch (Exception e) {
             return "error";
@@ -40,5 +49,19 @@ public class PostController {
         return postService.getAllPosts();
     }
 
+    @PostMapping("/create")
+    public void createPost(@RequestHeader String accessToken, @RequestParam String content) {
+        String uid = authService.verifyAndFetchUid(accessToken);
+        postService.createPost(Post.newPost(content, uid));
+    }
 
+    @GetMapping("/get")
+    public GetPostResponse getPost(@RequestHeader String accessToken, @RequestParam String postId) {
+        String uid = authService.verifyAndFetchUid(accessToken);
+
+        Post post = postService.getPost(postId);
+        viewHistoryService.userReadPost(postId, uid);
+
+        return new GetPostResponse(post);
+    }
 }

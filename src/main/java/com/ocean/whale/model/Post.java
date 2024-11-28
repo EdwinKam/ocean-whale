@@ -1,20 +1,28 @@
 package com.ocean.whale.model;
 
+import com.ocean.whale.util.ObjectConvertor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Setter
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Post {
-  private Integer id;
+  private String id;
   private String content;
-  private Integer authorId;
+  private String authorId;
 
-  public Map<String, Object> toMap() {
-    return Map.of("userId", authorId, "postId", id, "content", content);
+  public static Post newPost(String content, String authorId) {
+    return new Post(UUID.randomUUID().toString().substring(0, 8), content, authorId);
+  }
+
+  public static Post fromMap(Map<String, Object> map) {
+    return ObjectConvertor.fromMap(map, Post.class);
   }
 }

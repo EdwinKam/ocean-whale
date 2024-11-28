@@ -1,14 +1,13 @@
-package com.ocean.whale.model;
+package com.ocean.whale.api;
 
+import com.ocean.whale.model.PostRecommendationList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 public class GetRecommendationsResponse {
-    List<String> recommendedPostIds;
+    PostRecommendationList recommendedPostIds;
 }
