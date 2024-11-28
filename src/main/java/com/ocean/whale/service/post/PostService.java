@@ -19,8 +19,9 @@ public class PostService {
     this.firestoreService = firestoreService;
   }
 
-  public void createPost(Post post) {
+  public String createPost(Post post) {
     firestoreService.addDocument("post", post.getId(), ObjectConvertor.toMap(post));
+    return post.getId();
   }
 
   public List<Map<String, Object>> getAllPosts() throws Exception {

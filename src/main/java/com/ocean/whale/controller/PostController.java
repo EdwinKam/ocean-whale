@@ -1,5 +1,7 @@
 package com.ocean.whale.controller;
 
+import com.ocean.whale.api.CreatePostRequest;
+import com.ocean.whale.api.GetCreatePostResponse;
 import com.ocean.whale.api.GetPostResponse;
 import com.ocean.whale.model.Post;
 import com.ocean.whale.service.auth.AuthService;
@@ -9,6 +11,7 @@ import org.apache.http.auth.AUTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,10 +52,12 @@ public class PostController {
         return postService.getAllPosts();
     }
 
-    @PostMapping("/create")
-    public void createPost(@RequestHeader String accessToken, @RequestParam String content) {
+    @PostMapping(value = "/create", produces = "application/json")
+    public GetCreatePostResponse createPost(@RequestHeader String accessToken, @RequestBody CreatePostRequest request) {
         String uid = authService.verifyAndFetchUid(accessToken);
-        postService.createPost(Post.newPost(content, uid));
+        String postId = postService.createPost(Post.newPost(request.getPostContent(), uid));
+
+        return new GetCreatePostResponse(postId);
     }
 
     @GetMapping("/get")
