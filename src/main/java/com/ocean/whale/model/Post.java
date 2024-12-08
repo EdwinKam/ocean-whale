@@ -1,5 +1,6 @@
 package com.ocean.whale.model;
 
+import com.ocean.whale.util.IdGenerator;
 import com.ocean.whale.util.ObjectConvertor;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +20,7 @@ public class Post {
   private String authorId;
 
   public static Post newPost(String content, String authorId) {
-    return new Post(UUID.randomUUID().toString().substring(0, 8), content, authorId);
+    return new Post(IdGenerator.length(8), content, authorId);
   }
 
   public static Post fromMap(Map<String, Object> map) {
