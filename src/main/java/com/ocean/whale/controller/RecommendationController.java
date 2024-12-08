@@ -1,6 +1,6 @@
 package com.ocean.whale.controller;
 
-import com.ocean.whale.model.GetRecommendationsResponse;
+import com.ocean.whale.api.GetRecommendationsResponse;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.recommendation.RecommendationService;
 

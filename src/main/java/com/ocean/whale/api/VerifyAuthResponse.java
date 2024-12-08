@@ -1,4 +1,4 @@
-package com.ocean.whale.model;
+package com.ocean.whale.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
