@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserPublicData {
-    String userName;
+    String username;
     String uid;
 }

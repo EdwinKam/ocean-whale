@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-import static com.ocean.whale.model.Post.fromMap;
-
 @Service
 public class UserService {
     private FirestoreService firestoreService;
@@ -64,7 +62,7 @@ public class UserService {
     public void createUser(String uid, String username) {
         UserDetailedData userDetailedData = new UserDetailedData();
         userDetailedData.setUid(uid);
-        userDetailedData.setUserName(username);
+        userDetailedData.setUsername(username);
         try {
             firestoreService.addDocument("userDetailedData", userDetailedData.getUid(), ObjectConvertor.toMap(userDetailedData));
         } catch (Exception e) {

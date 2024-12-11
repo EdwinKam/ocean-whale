@@ -69,4 +69,14 @@ public class PostController {
 
         return new GetPostResponse(post);
     }
+
+//    @GetMapping("/getBatchPost")
+//    public GetPostResponse getBatchPost(@RequestHeader String accessToken, @RequestBody String postId) {
+//        String uid = authService.verifyAndFetchUid(accessToken);
+//
+//        Post post = postService.getPost(postId);
+//        viewHistoryService.userReadPost(postId, uid);
+//
+//        return new GetPostResponse(post);
+//    }
 }
