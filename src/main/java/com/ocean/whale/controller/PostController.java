@@ -3,6 +3,7 @@ package com.ocean.whale.controller;
 import com.ocean.whale.api.CreatePostRequest;
 import com.ocean.whale.api.GetBatchPostResponse;
 import com.ocean.whale.api.GetCreatePostResponse;
+import com.ocean.whale.api.GetOwnPostResponse;
 import com.ocean.whale.api.GetPostResponse;
 import com.ocean.whale.model.Post;
 import com.ocean.whale.model.UserPublicData;
@@ -79,6 +80,16 @@ public class PostController {
         List<Post> posts = postIds.stream().map(postService::getPost).toList();
 
         GetBatchPostResponse response = new GetBatchPostResponse();
+        response.setPosts(posts);
+
+        return response;
+    }
+
+    @GetMapping("/getOwnPosts")
+    public GetOwnPostResponse getOwnPosts(@RequestHeader String accessToken) {
+        List<Post> posts = postService.getOwnPosts(accessToken);
+
+        GetOwnPostResponse response = new GetOwnPostResponse();
         response.setPosts(posts);
 
         return response;
