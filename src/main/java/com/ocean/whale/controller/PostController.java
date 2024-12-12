@@ -75,7 +75,7 @@ public class PostController {
     public GetBatchPostResponse getBatchPost(@RequestHeader String accessToken, @RequestParam List<String> postIds) {
         String requesterUserId = authService.verifyAndFetchUid(accessToken);
 
-        List<Post> posts = postIds.stream().map(postService::getPost).toList();
+        List<Post> posts = postService.getBatchPosts(postIds);
 
         GetBatchPostResponse response = new GetBatchPostResponse();
         response.setPosts(posts);

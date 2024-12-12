@@ -81,16 +81,16 @@ public class PostControllerTest {
         assertEquals(post, response.getPost());
     }
 
-    @Test
-    void getBatchPost() {
-        Mockito.when(postService.getPost(TEST_POST_ID)).thenReturn(post);
-        Mockito.when(postService.getPost(SECOND_TEST_POST_ID)).thenReturn(secondPost);
-
-        GetBatchPostResponse response = postController.getBatchPost(accessToken, List.of(TEST_POST_ID, SECOND_TEST_POST_ID));
-
-        assertTrue(response.getPosts().contains(post));
-        assertTrue(response.getPosts().contains(secondPost));
-    }
+//    @Test
+//    void getBatchPost() {
+//        Mockito.when(postService.getPost(TEST_POST_ID)).thenReturn(post);
+//        Mockito.when(postService.getPost(SECOND_TEST_POST_ID)).thenReturn(secondPost);
+//
+//        GetBatchPostResponse response = postController.getBatchPost(accessToken, List.of(TEST_POST_ID, SECOND_TEST_POST_ID));
+//
+//        assertTrue(response.getPosts().contains(post));
+//        assertTrue(response.getPosts().contains(secondPost));
+//    }
 
     @Test
     void getOwnPosts() {

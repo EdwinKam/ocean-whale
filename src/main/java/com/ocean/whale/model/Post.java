@@ -18,9 +18,10 @@ public class Post {
     private String id;
     private String content;
     private String authorId;
+    private long creationTs;
 
     public static Post newPost(String content, String authorId) {
-        return new Post(IdGenerator.length(8), content, authorId);
+        return new Post(IdGenerator.length(8), content, authorId, System.currentTimeMillis());
     }
 
     public static Post fromMap(Map<String, Object> map) {

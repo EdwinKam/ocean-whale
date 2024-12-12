@@ -40,7 +40,13 @@ public class PostService {
     List<Map<String, Object>> listOfMap = firestoreService.getDocuments("post", filter);
 
     return listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, Post.class)).toList();
+  }
 
+  public List<Post> getBatchPosts(List<String> postIds) {
+    Filter filter = Filter.inArray("id", postIds);
+    List<Map<String, Object>> listOfMap = firestoreService.getDocuments("post", filter);
+
+    return listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, Post.class)).toList();
   }
 
   public Post getPost(String postId) {

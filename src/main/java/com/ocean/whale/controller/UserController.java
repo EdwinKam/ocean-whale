@@ -32,10 +32,7 @@ public class UserController {
         // Get recommendations based on the UID
         GetBatchUserPublicDataResponse response = new GetBatchUserPublicDataResponse();
 
-        List<UserPublicData> userPublicData = userIds.stream().map(userId -> {
-            System.out.println(userId);
-            return userService.getUserPublicData(userId);
-        }).toList();
+        List<UserPublicData> userPublicData = userService.getBatchUserPublicData(userIds);
 
         response.setUserPublicDataList(userPublicData);
 
