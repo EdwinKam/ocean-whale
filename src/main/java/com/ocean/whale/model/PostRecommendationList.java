@@ -1,11 +1,13 @@
 package com.ocean.whale.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
+@Getter
 public class PostRecommendationList {
     List<String> recommendations; // list of postId
 

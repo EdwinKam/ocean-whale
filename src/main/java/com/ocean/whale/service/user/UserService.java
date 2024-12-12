@@ -3,7 +3,8 @@ package com.ocean.whale.service.user;
 import com.ocean.whale.exception.WhaleException;
 import com.ocean.whale.exception.WhaleServiceException;
 import com.ocean.whale.model.AuthCredential;
-import com.ocean.whale.model.User;
+import com.ocean.whale.model.UserDetailedData;
+import com.ocean.whale.model.UserPublicData;
 import com.ocean.whale.repository.FirestoreService;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.util.ObjectConvertor;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -36,6 +36,15 @@ public class UserService {
         }
     }
 
+    public UserPublicData getUserPublicData(String uid) {
+        try {
+            Map<String, Object> userData = firestoreService.getDocument("user", uid);
+            return ObjectConvertor.fromMap(userData, UserPublicData.class);
+        } catch (Exception e) {
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, "error when calling the user table", e);
+        }
+    }
+
     public void registerUserWithThirdPartyCredentials(String uid) {
         // Fetch username and email
         AuthCredential authCredential = authService.getAuthCredential(uid);
@@ -51,13 +60,13 @@ public class UserService {
     }
 
     public void createUser(String uid, String username) {
-        User user = new User();
-        user.setUid(uid);
-        user.setUsername(username);
+        UserDetailedData userDetailedData = new UserDetailedData();
+        userDetailedData.setUid(uid);
+        userDetailedData.setUsername(username);
         try {
-            firestoreService.addDocument("user", user.getUid(), ObjectConvertor.toMap(user));
+            firestoreService.addDocument("userDetailedData", userDetailedData.getUid(), ObjectConvertor.toMap(userDetailedData));
         } catch (Exception e) {
-            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, "error when creating new user in the user table", e);
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, "error when creating new userDetailedData in the userDetailedData table", e);
         }
     }
 

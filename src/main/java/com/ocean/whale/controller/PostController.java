@@ -1,9 +1,11 @@
 package com.ocean.whale.controller;
 
 import com.ocean.whale.api.CreatePostRequest;
+import com.ocean.whale.api.GetBatchPostResponse;
 import com.ocean.whale.api.GetCreatePostResponse;
 import com.ocean.whale.api.GetPostResponse;
 import com.ocean.whale.model.Post;
+import com.ocean.whale.model.UserPublicData;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.post.PostService;
 import com.ocean.whale.service.view_history.ViewHistoryService;
@@ -68,5 +70,17 @@ public class PostController {
         viewHistoryService.userReadPost(postId, uid);
 
         return new GetPostResponse(post);
+    }
+
+    @GetMapping("/getBatchPost")
+    public GetBatchPostResponse getBatchPost(@RequestHeader String accessToken, @RequestParam List<String> postIds) {
+        String requesterUserId = authService.verifyAndFetchUid(accessToken);
+
+        List<Post> posts = postIds.stream().map(postService::getPost).toList();
+
+        GetBatchPostResponse response = new GetBatchPostResponse();
+        response.setPosts(posts);
+
+        return response;
     }
 }
