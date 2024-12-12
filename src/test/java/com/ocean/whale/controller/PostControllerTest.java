@@ -3,6 +3,7 @@ package com.ocean.whale.controller;
 import com.ocean.whale.api.CreatePostRequest;
 import com.ocean.whale.api.GetBatchPostResponse;
 import com.ocean.whale.api.CreatePostResponse;
+import com.ocean.whale.api.GetOwnPostResponse;
 import com.ocean.whale.api.GetPostResponse;
 import com.ocean.whale.model.Post;
 import com.ocean.whale.service.auth.AuthService;
@@ -86,6 +87,17 @@ public class PostControllerTest {
         Mockito.when(postService.getPost(SECOND_TEST_POST_ID)).thenReturn(secondPost);
 
         GetBatchPostResponse response = postController.getBatchPost(accessToken, List.of(TEST_POST_ID, SECOND_TEST_POST_ID));
+
+        assertTrue(response.getPosts().contains(post));
+        assertTrue(response.getPosts().contains(secondPost));
+    }
+
+    @Test
+    void getOwnPosts() {
+        Mockito.reset(authService); // this function no need authService, clear the stubbing
+        Mockito.when(postService.getOwnPosts(accessToken)).thenReturn(List.of(post, secondPost));
+
+        GetOwnPostResponse response = postController.getOwnPosts(accessToken);
 
         assertTrue(response.getPosts().contains(post));
         assertTrue(response.getPosts().contains(secondPost));

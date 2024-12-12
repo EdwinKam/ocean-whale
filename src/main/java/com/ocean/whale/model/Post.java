@@ -15,15 +15,23 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Post {
-  private String id;
-  private String content;
-  private String authorId;
+    private String id;
+    private String content;
+    private String authorId;
 
-  public static Post newPost(String content, String authorId) {
-    return new Post(IdGenerator.length(8), content, authorId);
-  }
+    public static Post newPost(String content, String authorId) {
+        return new Post(IdGenerator.length(8), content, authorId);
+    }
 
-  public static Post fromMap(Map<String, Object> map) {
-    return ObjectConvertor.fromMap(map, Post.class);
-  }
+    public static Post fromMap(Map<String, Object> map) {
+        return ObjectConvertor.fromMap(map, Post.class);
+    }
+
+    public Boolean equals(Post other) {
+        return this.getId().equals(other.getId()) &&
+                this.getAuthorId().equals(other.getAuthorId()) &&
+                this.getContent().equals(other.getContent());
+    }
+
+    ;
 }
