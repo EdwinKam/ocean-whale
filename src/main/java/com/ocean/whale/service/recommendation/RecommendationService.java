@@ -2,8 +2,11 @@ package com.ocean.whale.service.recommendation;
 
 import com.ocean.whale.exception.WhaleException;
 import com.ocean.whale.exception.WhaleServiceException;
+import com.ocean.whale.model.Post;
 import com.ocean.whale.model.PostRecommendationList;
 import com.ocean.whale.repository.FirestoreService;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,10 @@ public class RecommendationService {
       userRec = firestoreService.getDocument("recommendation", uid);
     } catch (Exception e) {
       throw new WhaleServiceException(FIREBASE_ERROR, "error occurred when fetching recommendation table", e);
+    }
+
+    if (userRec == null) {
+      return new PostRecommendationList(new ArrayList<>());
     }
 
     return PostRecommendationList.fromMap(userRec);
