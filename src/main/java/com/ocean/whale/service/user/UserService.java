@@ -1,8 +1,10 @@
 package com.ocean.whale.service.user;
 
+import com.google.cloud.firestore.Filter;
 import com.ocean.whale.exception.WhaleException;
 import com.ocean.whale.exception.WhaleServiceException;
 import com.ocean.whale.model.AuthCredential;
+import com.ocean.whale.model.Post;
 import com.ocean.whale.model.UserDetailedData;
 import com.ocean.whale.model.UserPublicData;
 import com.ocean.whale.repository.FirestoreService;
@@ -12,6 +14,7 @@ import com.ocean.whale.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -40,6 +43,16 @@ public class UserService {
         try {
             Map<String, Object> userData = firestoreService.getDocument("user", uid);
             return ObjectConvertor.fromMap(userData, UserPublicData.class);
+        } catch (Exception e) {
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, "error when calling the user table", e);
+        }
+    }
+
+    public List<UserPublicData> getBatchUserPublicData(List<String> uids) {
+        try {
+            Filter filter = Filter.inArray("id", uids);
+            List<Map<String, Object>> listOfMap = firestoreService.getDocuments("user", filter);
+            return listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, UserPublicData.class)).toList();
         } catch (Exception e) {
             throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, "error when calling the user table", e);
         }

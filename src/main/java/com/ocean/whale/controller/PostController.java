@@ -2,14 +2,13 @@ package com.ocean.whale.controller;
 
 import com.ocean.whale.api.CreatePostRequest;
 import com.ocean.whale.api.GetBatchPostResponse;
-import com.ocean.whale.api.GetCreatePostResponse;
+import com.ocean.whale.api.CreatePostResponse;
+import com.ocean.whale.api.GetOwnPostResponse;
 import com.ocean.whale.api.GetPostResponse;
 import com.ocean.whale.model.Post;
-import com.ocean.whale.model.UserPublicData;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.post.PostService;
 import com.ocean.whale.service.view_history.ViewHistoryService;
-import org.apache.http.auth.AUTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,11 +54,11 @@ public class PostController {
     }
 
     @PostMapping(value = "/create", produces = "application/json")
-    public GetCreatePostResponse createPost(@RequestHeader String accessToken, @RequestBody CreatePostRequest request) {
+    public CreatePostResponse createPost(@RequestHeader String accessToken, @RequestBody CreatePostRequest request) {
         String uid = authService.verifyAndFetchUid(accessToken);
         String postId = postService.createPost(Post.newPost(request.getPostContent(), uid));
 
-        return new GetCreatePostResponse(postId);
+        return new CreatePostResponse(postId);
     }
 
     @GetMapping("/get")
@@ -76,9 +75,19 @@ public class PostController {
     public GetBatchPostResponse getBatchPost(@RequestHeader String accessToken, @RequestParam List<String> postIds) {
         String requesterUserId = authService.verifyAndFetchUid(accessToken);
 
-        List<Post> posts = postIds.stream().map(postService::getPost).toList();
+        List<Post> posts = postService.getBatchPosts(postIds);
 
         GetBatchPostResponse response = new GetBatchPostResponse();
+        response.setPosts(posts);
+
+        return response;
+    }
+
+    @GetMapping("/getOwnPosts")
+    public GetOwnPostResponse getOwnPosts(@RequestHeader String accessToken) {
+        List<Post> posts = postService.getOwnPosts(accessToken);
+
+        GetOwnPostResponse response = new GetOwnPostResponse();
         response.setPosts(posts);
 
         return response;
