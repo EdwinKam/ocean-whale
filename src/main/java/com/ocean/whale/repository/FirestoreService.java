@@ -40,6 +40,16 @@ public class FirestoreService {
         }
     }
 
+    public String addDocument(String collectionName, String documentId, Object data) {
+        try {
+            CollectionReference collection = firestore.collection(collectionName);
+            ApiFuture<WriteResult> future = collection.document(documentId).set(data);
+            return future.get().getUpdateTime().toString();
+        } catch (Exception e) {
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, String.format("failed to set collectionName: %s documentId: %s", collectionName, documentId));
+        }
+    }
+
     public Map<String, Object> getDocument(String collectionName, String documentId) {
         try {
             DocumentReference docRef = firestore.collection(collectionName).document(documentId);
