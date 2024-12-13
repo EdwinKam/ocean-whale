@@ -68,7 +68,6 @@ public class UserService {
         if (StringUtil.isNullOrBlank(username) && StringUtil.isNullOrBlank(email)) {
             throw new WhaleServiceException(WhaleException.NO_USERNAME_TO_CREATE_USER, "failed to use firebase username to create user, need to provide another username manually");
         }
-
         this.createUser(uid, StringUtil.isNotNullOrBlank(username) ? username : email);
     }
 
@@ -77,7 +76,7 @@ public class UserService {
         userDetailedData.setUid(uid);
         userDetailedData.setUsername(username);
         try {
-            firestoreService.addDocument("userDetailedData", userDetailedData.getUid(), ObjectConvertor.toMap(userDetailedData));
+            firestoreService.addDocument("user", userDetailedData.getUid(), userDetailedData);
         } catch (Exception e) {
             throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, "error when creating new userDetailedData in the userDetailedData table", e);
         }
