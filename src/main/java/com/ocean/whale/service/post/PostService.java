@@ -50,10 +50,7 @@ public class PostService {
   }
 
   public Post getPost(String postId) {
-    System.out.println("what is postId");
-    System.out.println(postId);
     Map<String, Object> databaseValue = firestoreService.getDocument("post", postId);
-    System.out.println(databaseValue);
     return Post.fromMap(databaseValue);
   }
 }
