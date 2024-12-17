@@ -4,6 +4,7 @@ import com.google.cloud.firestore.Filter;
 import com.ocean.whale.exception.WhaleException;
 import com.ocean.whale.exception.WhaleServiceException;
 import com.ocean.whale.model.Post;
+import com.ocean.whale.model.PostComment;
 import com.ocean.whale.repository.FirestoreService;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.util.ObjectConvertor;
@@ -59,5 +60,16 @@ public class PostService {
     public Post getPost(String postId) {
         Map<String, Object> databaseValue = firestoreService.getDocument("post", postId);
         return Post.fromMap(databaseValue);
+    }
+
+    public List<PostComment> getPostComments(String postId) {
+        Filter filter = Filter.equalTo("postId", postId);
+        List<Map<String, Object>> listOfMap = firestoreService.getDocuments("postComment", filter);
+
+        return listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, PostComment.class)).toList();
+    }
+
+    public String addPostComment(PostComment postComment) {
+        return firestoreService.addDocument("postComment", postComment.getCommentId(), postComment);
     }
 }

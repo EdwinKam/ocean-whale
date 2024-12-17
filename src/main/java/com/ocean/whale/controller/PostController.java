@@ -1,11 +1,15 @@
 package com.ocean.whale.controller;
 
+import com.ocean.whale.api.AddCommentRequest;
+import com.ocean.whale.api.AddCommentResponse;
 import com.ocean.whale.api.CreatePostRequest;
 import com.ocean.whale.api.GetBatchPostResponse;
 import com.ocean.whale.api.CreatePostResponse;
+import com.ocean.whale.api.GetPostCommentsResponse;
 import com.ocean.whale.api.GetOwnPostResponse;
 import com.ocean.whale.api.GetPostResponse;
 import com.ocean.whale.model.Post;
+import com.ocean.whale.model.PostComment;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.post.PostService;
 import com.ocean.whale.service.view_history.ViewHistoryService;
@@ -19,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/post")
@@ -91,5 +94,22 @@ public class PostController {
         response.setPosts(posts);
 
         return response;
+    }
+
+    @GetMapping("getComments")
+    public GetPostCommentsResponse getComments(@RequestHeader String accessToken, @RequestParam String postId) {
+        GetPostCommentsResponse response = new GetPostCommentsResponse();
+        response.setPostComments(postService.getPostComments(postId));
+
+        return response;
+    }
+
+    @PostMapping(value = "/addComment", produces = "application/json")
+    public AddCommentResponse addComment(@RequestHeader String accessToken, @RequestBody AddCommentRequest request) {
+        String uid = authService.verifyAndFetchUid(accessToken);
+        PostComment postComment = PostComment.create(request.getPostId(), request.getContent(), uid, request.getParentCommentId());
+        postService.addPostComment(postComment);
+
+        return new AddCommentResponse(postComment.getCommentId());
     }
 }
