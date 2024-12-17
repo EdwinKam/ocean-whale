@@ -50,7 +50,7 @@ public class UserService {
 
     public List<UserPublicData> getBatchUserPublicData(List<String> uids) {
         try {
-            Filter filter = Filter.inArray("id", uids);
+            Filter filter = Filter.inArray("uid", uids);
             List<Map<String, Object>> listOfMap = firestoreService.getDocuments("user", filter);
             return listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, UserPublicData.class)).toList();
         } catch (Exception e) {
