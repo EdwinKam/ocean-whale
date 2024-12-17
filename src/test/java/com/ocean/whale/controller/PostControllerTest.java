@@ -1,7 +1,6 @@
 package com.ocean.whale.controller;
 
 import com.ocean.whale.api.CreatePostRequest;
-import com.ocean.whale.api.GetBatchPostResponse;
 import com.ocean.whale.api.CreatePostResponse;
 import com.ocean.whale.api.GetOwnPostResponse;
 import com.ocean.whale.api.GetPostResponse;
@@ -73,18 +72,18 @@ public class PostControllerTest {
     }
 
     @Test
-    void getPost() {
+    void readPost() {
         Mockito.when(postService.getPost(TEST_POST_ID)).thenReturn(post);
 
-        GetPostResponse response = postController.getPost(accessToken, TEST_POST_ID);
+        GetPostResponse response = postController.readPost(accessToken, TEST_POST_ID);
 
         assertEquals(post, response.getPost());
     }
 
 //    @Test
 //    void getBatchPost() {
-//        Mockito.when(postService.getPost(TEST_POST_ID)).thenReturn(post);
-//        Mockito.when(postService.getPost(SECOND_TEST_POST_ID)).thenReturn(secondPost);
+//        Mockito.when(postService.readPost(TEST_POST_ID)).thenReturn(post);
+//        Mockito.when(postService.readPost(SECOND_TEST_POST_ID)).thenReturn(secondPost);
 //
 //        GetBatchPostResponse response = postController.getBatchPost(accessToken, List.of(TEST_POST_ID, SECOND_TEST_POST_ID));
 //

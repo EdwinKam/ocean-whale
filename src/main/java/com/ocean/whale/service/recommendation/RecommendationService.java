@@ -38,4 +38,12 @@ public class RecommendationService {
 
     return PostRecommendationList.fromMap(userRec);
   }
+
+  public void addRecommendations(String uid, PostRecommendationList postRecommendationList) {
+    try {
+      firestoreService.addDocument("recommendation", uid, postRecommendationList);
+    } catch (Exception e) {
+      throw new WhaleServiceException(FIREBASE_ERROR, "error occurred when fetching recommendation table", e);
+    }
+  }
 }

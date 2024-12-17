@@ -49,7 +49,7 @@ public class PostController {
 
     // test api only
     @GetMapping("/getPostsForTesting")
-    public List<Map<String, Object>> getPosts() throws Exception {
+    public List<Post> getPosts() throws Exception {
         return postService.getAllPosts();
     }
 
@@ -61,8 +61,8 @@ public class PostController {
         return new CreatePostResponse(postId);
     }
 
-    @GetMapping("/get")
-    public GetPostResponse getPost(@RequestHeader String accessToken, @RequestParam String postId) {
+    @GetMapping("/readPost")
+    public GetPostResponse readPost(@RequestHeader String accessToken, @RequestParam String postId) {
         String uid = authService.verifyAndFetchUid(accessToken);
 
         Post post = postService.getPost(postId);
