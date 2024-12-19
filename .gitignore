@@ -31,3 +31,5 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+
+application.yml
