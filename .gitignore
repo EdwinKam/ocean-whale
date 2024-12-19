@@ -32,4 +32,4 @@ rad.json
 #Test results file
 TestResults.xml
 
-application.yml
+application.properties
