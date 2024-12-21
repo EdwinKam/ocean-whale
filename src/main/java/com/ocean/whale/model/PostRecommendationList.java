@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("ALL")
 @AllArgsConstructor
 @Getter
 public class PostRecommendationList {
