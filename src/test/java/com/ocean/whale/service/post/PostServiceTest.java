@@ -38,8 +38,8 @@ public class PostServiceTest {
 
     @Test
     void getOwnPosts() {
-        Post post1 = Post.newPost("haha", uid);
-        Post post2 = Post.newPost("yoyo", uid);
+        Post post1 = Post.newPost("haha", "hehe", uid);
+        Post post2 = Post.newPost("yoyo", "hoho", uid);
         List<Map<String, Object>> databaseValues = List.of(ObjectConvertor.toMap(post1), ObjectConvertor.toMap(post2));
         Mockito.when(authService.verifyAndFetchUid(accessToken)).thenReturn(uid);
         Mockito.when(firestoreService.getDocuments(Mockito.eq("post"), Mockito.any(Filter.class))).thenReturn(databaseValues);

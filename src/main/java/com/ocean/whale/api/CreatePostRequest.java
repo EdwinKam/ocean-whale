@@ -9,4 +9,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CreatePostRequest {
     String postContent;
+    String postSubject;
 }
