@@ -43,7 +43,7 @@ public class PostController {
     public String createPostForTesting(@RequestParam String content, @RequestParam String userId) {
         // curl -X POST "http://localhost:8080/api/createPost" -d "content=Hello" -d "userId=123"
         try {
-            postService.createPost(Post.newPost(content, userId));
+            postService.createPost(Post.newPost(content, "test subject", userId));
             return "success creating new post";
         } catch (Exception e) {
             return "error";
@@ -59,8 +59,8 @@ public class PostController {
     @PostMapping(value = "/create", produces = "application/json")
     public CreatePostResponse createPost(@RequestHeader String accessToken, @RequestBody CreatePostRequest request) {
         String uid = authService.verifyAndFetchUid(accessToken);
-        String postId = postService.createPost(Post.newPost(request.getPostContent(), uid));
-
+        Post post = Post.newPost(request.getPostContent(), request.getPostSubject(), uid);
+        String postId = postService.createPost(post);
         return new CreatePostResponse(postId);
     }
 

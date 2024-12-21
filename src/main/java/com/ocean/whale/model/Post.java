@@ -17,11 +17,12 @@ import java.util.UUID;
 public class Post {
     private String id;
     private String content;
+    private String subject;
     private String authorId;
     private long creationTs;
 
-    public static Post newPost(String content, String authorId) {
-        return new Post(IdGenerator.length(8), content, authorId, System.currentTimeMillis());
+    public static Post newPost(String content, String subject, String authorId) {
+        return new Post(IdGenerator.length(8), content, subject, authorId, System.currentTimeMillis());
     }
 
     public static Post fromMap(Map<String, Object> map) {
@@ -31,7 +32,8 @@ public class Post {
     public Boolean equals(Post other) {
         return this.getId().equals(other.getId()) &&
                 this.getAuthorId().equals(other.getAuthorId()) &&
-                this.getContent().equals(other.getContent());
+                this.getContent().equals(other.getContent()) &&
+                this.getSubject().equals(other.getSubject());
     }
 
     ;
