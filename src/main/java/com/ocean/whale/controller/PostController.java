@@ -10,8 +10,10 @@ import com.ocean.whale.api.GetOwnPostResponse;
 import com.ocean.whale.api.GetPostResponse;
 import com.ocean.whale.model.Post;
 import com.ocean.whale.model.PostComment;
+import com.ocean.whale.service.ImageStorageService;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.post.PostService;
+import com.ocean.whale.service.user.UserService;
 import com.ocean.whale.service.view_history.ViewHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +23,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -43,7 +51,7 @@ public class PostController {
     public String createPostForTesting(@RequestParam String content, @RequestParam String userId) {
         // curl -X POST "http://localhost:8080/api/createPost" -d "content=Hello" -d "userId=123"
         try {
-            postService.createPost(Post.newPost(content, "test subject", userId));
+            postService.createPost("test subject", content, userId, null);
             return "success creating new post";
         } catch (Exception e) {
             return "error";
@@ -57,10 +65,14 @@ public class PostController {
     }
 
     @PostMapping(value = "/create", produces = "application/json")
-    public CreatePostResponse createPost(@RequestHeader String accessToken, @RequestBody CreatePostRequest request) {
+    public CreatePostResponse createPost(
+            @RequestHeader String accessToken,
+            @RequestParam("postContent") String postContent,
+            @RequestParam("postSubject") String postSubject,
+            @RequestParam("image") MultipartFile image) {
+
         String uid = authService.verifyAndFetchUid(accessToken);
-        Post post = Post.newPost(request.getPostContent(), request.getPostSubject(), uid);
-        String postId = postService.createPost(post);
+        String postId = postService.createPost(postSubject, postContent, uid, List.of(image));
         return new CreatePostResponse(postId);
     }
 

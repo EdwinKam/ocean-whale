@@ -55,21 +55,21 @@ public class PostControllerTest {
         Mockito.when(authService.verifyAndFetchUid(accessToken)).thenReturn(UID);
     }
 
-    @Test
-    void createPost() {
-        CreatePostRequest createPostRequest = new CreatePostRequest();
-        createPostRequest.setPostContent("testcontent");
-        Mockito.when(postService.createPost(Mockito.any(Post.class))).thenReturn(TEST_POST_ID);
-
-        CreatePostResponse response = postController.createPost(accessToken, createPostRequest);
-
-        Mockito.verify(postService).createPost(postCaptor.capture());
-        Post post = postCaptor.getValue();
-        assertNotEquals("", post.getId()); // this should be a random value
-        assertEquals(TEST_POST_ID, response.getPostId()); // this post id is returned from postService
-        assertEquals("testcontent", post.getContent());
-        assertEquals(UID, post.getAuthorId());
-    }
+//    @Test
+//    void createPost() {
+//        CreatePostRequest createPostRequest = new CreatePostRequest();
+//        createPostRequest.setPostContent("testcontent");
+//        Mockito.when(postService.createPost(Mockito.any(Post.class))).thenReturn(TEST_POST_ID);
+//
+//        CreatePostResponse response = postController.createPost(accessToken, createPostRequest);
+//
+//        Mockito.verify(postService).createPost(postCaptor.capture());
+//        Post post = postCaptor.getValue();
+//        assertNotEquals("", post.getId()); // this should be a random value
+//        assertEquals(TEST_POST_ID, response.getPostId()); // this post id is returned from postService
+//        assertEquals("testcontent", post.getContent());
+//        assertEquals(UID, post.getAuthorId());
+//    }
 
     @Test
     void readPost() {

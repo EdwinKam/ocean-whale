@@ -6,11 +6,14 @@ import com.ocean.whale.exception.WhaleServiceException;
 import com.ocean.whale.model.Post;
 import com.ocean.whale.model.PostComment;
 import com.ocean.whale.repository.FirestoreService;
+import com.ocean.whale.service.ImageStorageService;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.util.ObjectConvertor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,16 +21,33 @@ import java.util.Map;
 public class PostService {
     private FirestoreService firestoreService;
     private AuthService authService;
+    private ImageStorageService imageStorageService;
 
     @Autowired
-    public PostService(FirestoreService firestoreService, AuthService authService) {
+    public PostService(FirestoreService firestoreService, AuthService authService, ImageStorageService imageStorageService) {
         this.firestoreService = firestoreService;
         this.authService = authService;
+        this.imageStorageService = imageStorageService;
     }
 
-    public String createPost(Post post) {
-        firestoreService.addDocument("post", post.getId(), ObjectConvertor.toMap(post));
+    public String createPost(String postSubject, String postContent, String authorId, List<MultipartFile> images) {
+        Post post = Post.newPost(postContent, postSubject, authorId);
+        List<String> imageIds = savePostImages(post.getId(), images);
+        post.setImages(imageIds);
+//        firestoreService.addDocument("post", post.getId(), ObjectConvertor.toMap(post));
         return post.getId();
+    }
+
+    public List<String> savePostImages(String postId, List<MultipartFile> images) {
+        int i = 1;
+        List<String> imageIds = new ArrayList<>();
+        for (MultipartFile image : images) {
+            String imageId = postId + "_" + i++;
+            imageStorageService.uploadImage(image, imageId);
+            imageIds.add(imageId);
+        }
+
+        return imageIds;
     }
 
     public List<Post> getAllPosts() {

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,9 +21,10 @@ public class Post {
     private String subject;
     private String authorId;
     private long creationTs;
+    private List<String> images;
 
     public static Post newPost(String content, String subject, String authorId) {
-        return new Post(IdGenerator.length(8), content, subject, authorId, System.currentTimeMillis());
+        return new Post(IdGenerator.length(8), content, subject, authorId, System.currentTimeMillis(), null);
     }
 
     public static Post fromMap(Map<String, Object> map) {
