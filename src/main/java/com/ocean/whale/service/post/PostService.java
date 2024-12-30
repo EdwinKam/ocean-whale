@@ -32,22 +32,25 @@ public class PostService {
 
     public String createPost(String postSubject, String postContent, String authorId, List<MultipartFile> images) {
         Post post = Post.newPost(postContent, postSubject, authorId);
-        List<String> imageIds = savePostImages(post.getId(), images);
-        post.setImages(imageIds);
-//        firestoreService.addDocument("post", post.getId(), ObjectConvertor.toMap(post));
+        List<String> imageUrls = savePostImages(post.getId(), images);
+        post.setImageUrls(imageUrls);
+        firestoreService.addDocument("post", post.getId(), ObjectConvertor.toMap(post));
         return post.getId();
     }
 
     public List<String> savePostImages(String postId, List<MultipartFile> images) {
+        if (images == null) {
+            return new ArrayList<>();
+        }
         int i = 1;
-        List<String> imageIds = new ArrayList<>();
+        List<String> imageUrls = new ArrayList<>();
         for (MultipartFile image : images) {
             String imageId = postId + "_" + i++;
-            imageStorageService.uploadImage(image, imageId);
-            imageIds.add(imageId);
+            String imageUrl = imageStorageService.uploadImage(image, imageId);
+            imageUrls.add(imageUrl);
         }
 
-        return imageIds;
+        return imageUrls;
     }
 
     public List<Post> getAllPosts() {

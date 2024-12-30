@@ -13,6 +13,8 @@ import software.amazon.awssdk.core.sync.RequestBody;
 
 import java.io.IOException;
 
+import static com.ocean.whale.configuration.S3ClientConfig.AWS_REGION;
+
 @Service
 public class ImageStorageService {
     private final S3Client s3Client;
@@ -24,7 +26,7 @@ public class ImageStorageService {
         this.bucketName = "ocean-app-post-images"; // Initialize with your actual bucket name
     }
 
-    public void uploadImage(MultipartFile image, String fileName) {
+    public String uploadImage(MultipartFile image, String fileName) {
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
@@ -33,8 +35,13 @@ public class ImageStorageService {
                     .build();
 
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(image.getBytes()));
+            return constructS3Url(bucketName, AWS_REGION.toString(), fileName);
         } catch (Exception e) {
             throw new WhaleServiceException(WhaleException.S3_UPLOAD_ERROR, "error uploading image");
         }
+    }
+
+    private String constructS3Url(String bucketName, String region, String key) {
+        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, key);
     }
 }

@@ -21,7 +21,7 @@ public class Post {
     private String subject;
     private String authorId;
     private long creationTs;
-    private List<String> images;
+    private List<String> imageUrls;
 
     public static Post newPost(String content, String subject, String authorId) {
         return new Post(IdGenerator.length(8), content, subject, authorId, System.currentTimeMillis(), null);

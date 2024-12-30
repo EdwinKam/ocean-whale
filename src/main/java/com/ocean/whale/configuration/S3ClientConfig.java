@@ -11,6 +11,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 
 @Configuration
 public class S3ClientConfig {
+    public static Region AWS_REGION = Region.US_EAST_2;
     @Value("${aws.whale.access.key}")
     private String accessKey;
     @Value("${aws.whale.secret.access.key}")
@@ -24,7 +25,7 @@ public class S3ClientConfig {
         );
 
         return S3Client.builder()
-                .region(Region.US_EAST_2)
+                .region(AWS_REGION)
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .build();
     }
