@@ -1,10 +1,10 @@
 package com.ocean.whale.service.post;
 
-import com.google.cloud.firestore.Filter;
-import com.ocean.whale.model.Post;
-import com.ocean.whale.repository.FirestoreService;
-import com.ocean.whale.service.auth.AuthService;
-import com.ocean.whale.util.ObjectConvertor;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -16,10 +16,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import com.google.cloud.firestore.Filter;
+import com.ocean.whale.model.Post;
+import com.ocean.whale.repository.FirestoreService;
+import com.ocean.whale.service.auth.AuthService;
+import com.ocean.whale.util.ObjectConvertor;
 
 @RunWith(MockitoJUnitRunner.class)
 @ExtendWith(MockitoExtension.class)
@@ -41,8 +42,8 @@ public class PostServiceTest {
         Post post1 = Post.newPost("haha", "hehe", uid);
         Post post2 = Post.newPost("yoyo", "hoho", uid);
         List<Map<String, Object>> databaseValues = List.of(ObjectConvertor.toMap(post1), ObjectConvertor.toMap(post2));
-        Mockito.when(authService.verifyAndFetchUid(accessToken)).thenReturn(uid);
-        Mockito.when(firestoreService.getDocuments(Mockito.eq("post"), Mockito.any(Filter.class))).thenReturn(databaseValues);
+        Mockito.when(firestoreService.getDocuments(Mockito.eq("post"), Mockito.any(Filter.class)))
+                .thenReturn(databaseValues);
 
         List<Post> ownPosts = postService.getOwnPosts(accessToken);
 

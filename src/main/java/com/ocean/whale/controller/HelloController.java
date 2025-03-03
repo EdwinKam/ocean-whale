@@ -1,14 +1,14 @@
 package com.ocean.whale.controller;
 
-import com.ocean.whale.repository.FirestoreService;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import com.ocean.whale.repository.FirestoreService;
 
 @RestController
 @RequestMapping("/api")
@@ -32,25 +32,21 @@ public class HelloController {
         Map<String, Object> data = new HashMap<>();
         data.put("key", "value");
 
-        try {
-            // Add a document
-            String addResult = firestoreService.addDocument(collectionName, documentId, data);
+        // Add a document
+        String addResult = firestoreService.addDocument(collectionName, documentId, data);
 
-            // Get the document
-            Map<String, Object> retrievedData = firestoreService.getDocument(collectionName, documentId);
-            if (retrievedData == null || !retrievedData.equals(data)) {
-                return "Failure: Document retrieval mismatch.";
-            }
-
-            // Delete the document
-            boolean deleteResult = firestoreService.deleteDocument(collectionName, documentId);
-            if (!deleteResult) {
-                return "Failure: Document deletion failed.";
-            }
-
-            return "Success: Document added, retrieved, and deleted successfully.";
-        } catch (ExecutionException | InterruptedException e) {
-            return "Error during Firestore operations: " + e.getMessage();
+        // Get the document
+        Map<String, Object> retrievedData = firestoreService.getDocument(collectionName, documentId);
+        if (retrievedData == null || !retrievedData.equals(data)) {
+            return "Failure: Document retrieval mismatch.";
         }
+
+        // Delete the document
+        boolean deleteResult = firestoreService.deleteDocument(collectionName, documentId);
+        if (!deleteResult) {
+            return "Failure: Document deletion failed.";
+        }
+
+        return "Success: Document added, retrieved, and deleted successfully.";
     }
 }

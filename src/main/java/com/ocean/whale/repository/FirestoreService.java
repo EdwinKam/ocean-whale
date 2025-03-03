@@ -1,9 +1,17 @@
 package com.ocean.whale.repository;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -11,14 +19,6 @@ import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
 import com.ocean.whale.exception.WhaleException;
 import com.ocean.whale.exception.WhaleServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class FirestoreService {
@@ -36,7 +36,8 @@ public class FirestoreService {
             ApiFuture<WriteResult> future = collection.document(documentId).set(data);
             return future.get().getUpdateTime().toString();
         } catch (Exception e) {
-            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, String.format("failed to set collectionName: %s documentId: %s", collectionName, documentId));
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR,
+                    String.format("failed to set collectionName: %s documentId: %s", collectionName, documentId));
         }
     }
 
@@ -46,7 +47,8 @@ public class FirestoreService {
             ApiFuture<WriteResult> future = collection.document(documentId).set(data);
             return future.get().getUpdateTime().toString();
         } catch (Exception e) {
-            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, String.format("failed to set collectionName: %s documentId: %s", collectionName, documentId));
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR,
+                    String.format("failed to set collectionName: %s documentId: %s", collectionName, documentId));
         }
     }
 
@@ -55,7 +57,8 @@ public class FirestoreService {
             DocumentReference docRef = firestore.collection(collectionName).document(documentId);
             return docRef.get().get().getData();
         } catch (Exception e) {
-            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, String.format("failed to get collectionName: %s documentId: %s", collectionName, documentId));
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR,
+                    String.format("failed to get collectionName: %s documentId: %s", collectionName, documentId));
         }
     }
 
@@ -77,15 +80,32 @@ public class FirestoreService {
             List<QueryDocumentSnapshot> documents = future.get().getDocuments();
             return documents.stream().map(QueryDocumentSnapshot::getData).toList();
         } catch (Exception e) {
-            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, String.format("failed to get collectionName: %s documentId: %s with filter %s", collectionName, filter));
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, String
+                    .format("failed to get collectionName: %s documentId: %s with filter %s", collectionName, filter));
         }
     }
 
-    public boolean deleteDocument(String collectionName, String documentId)
-            throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection(collectionName).document(documentId);
-        ApiFuture<WriteResult> writeResult = docRef.delete();
-        // Optionally, you can check the result of the delete operation
-        return writeResult.get() != null;
+    public boolean deleteDocument(String collectionName, String documentId) {
+        try {
+            DocumentReference docRef = firestore.collection(collectionName).document(documentId);
+            ApiFuture<WriteResult> writeResult = docRef.delete();
+
+            return writeResult.get() != null;
+        } catch (Exception e) {
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, String
+                    .format("failed to delete collectionName: %s documentId: documentId: %s", collectionName,
+                            documentId));
+        }
+    }
+
+    public void updateDocument(String collectionName, String documentId, Map<String, Object> updates) {
+        try {
+            DocumentReference docRef = firestore.collection(collectionName).document(documentId);
+            ApiFuture<WriteResult> future = docRef.update(updates);
+            future.get();
+        } catch (Exception e) {
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR,
+                    String.format("failed to update collectionName: %s documentId: %s", collectionName, documentId));
+        }
     }
 }
