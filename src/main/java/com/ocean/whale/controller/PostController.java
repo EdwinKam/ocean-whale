@@ -1,20 +1,11 @@
 package com.ocean.whale.controller;
 
-import com.ocean.whale.api.AddCommentRequest;
-import com.ocean.whale.api.AddCommentResponse;
-import com.ocean.whale.api.CreatePostRequest;
-import com.ocean.whale.api.GetBatchPostResponse;
-import com.ocean.whale.api.CreatePostResponse;
-import com.ocean.whale.api.GetPostCommentsResponse;
-import com.ocean.whale.api.GetOwnPostResponse;
-import com.ocean.whale.api.GetPostResponse;
-import com.ocean.whale.model.Post;
-import com.ocean.whale.model.PostComment;
-import com.ocean.whale.service.auth.AuthService;
-import com.ocean.whale.service.post.PostService;
-import com.ocean.whale.service.view_history.ViewHistoryService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -22,10 +13,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.ocean.whale.api.AddCommentRequest;
+import com.ocean.whale.api.AddCommentResponse;
+import com.ocean.whale.api.CreatePostRequest;
+import com.ocean.whale.api.CreatePostResponse;
+import com.ocean.whale.api.GetBatchPostResponse;
+import com.ocean.whale.api.GetOwnPostResponse;
+import com.ocean.whale.api.GetPostCommentsResponse;
+import com.ocean.whale.api.GetPostResponse;
+import com.ocean.whale.model.Post;
+import com.ocean.whale.model.PostComment;
+import com.ocean.whale.service.auth.AuthService;
+import com.ocean.whale.service.post.PostService;
+import com.ocean.whale.service.view_history.ViewHistoryService;
 
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 public class PostController {
     private final PostService postService;
     private final AuthService authService;
@@ -39,9 +42,10 @@ public class PostController {
     }
 
     // for testing only
-    @PostMapping("/createPostForTesting")
-    public String createPostForTesting(@RequestParam String content, @RequestParam String userId) {
-        // curl -X POST "http://localhost:8080/api/createPost" -d "content=Hello" -d "userId=123"
+    @PostMapping("/test")
+    public String createTestPost(@RequestParam String content, @RequestParam String userId) {
+        // curl -X POST "http://localhost:8080/api/test" -d "content=Hello" -d
+        // "userId=123"
         try {
             postService.createPost(Post.newPost(content, "test subject", userId));
             return "success creating new post";
@@ -51,12 +55,12 @@ public class PostController {
     }
 
     // test api only
-    @GetMapping("/getPostsForTesting")
-    public List<Post> getPosts() throws Exception {
+    @GetMapping("/test/all")
+    public List<Post> getTestPosts() throws Exception {
         return postService.getAllPosts();
     }
 
-    @PostMapping(value = "/create", produces = "application/json")
+    @PostMapping(produces = "application/json")
     public CreatePostResponse createPost(@RequestHeader String accessToken, @RequestBody CreatePostRequest request) {
         String uid = authService.verifyAndFetchUid(accessToken);
         Post post = Post.newPost(request.getPostContent(), request.getPostSubject(), uid);
@@ -64,31 +68,32 @@ public class PostController {
         return new CreatePostResponse(postId);
     }
 
-    @GetMapping("/readPost")
-    public GetPostResponse readPost(@RequestHeader String accessToken, @RequestParam String postId) {
+    @GetMapping("/{postId}")
+    public GetPostResponse getPost(@RequestHeader String accessToken, @PathVariable String postId) {
         String uid = authService.verifyAndFetchUid(accessToken);
 
-        Post post = postService.getPost(postId);
+        Post post = postService.getPost(postId, uid);
         viewHistoryService.userReadPost(postId, uid);
 
         return new GetPostResponse(post);
     }
 
-    @GetMapping("/getBatchPost")
-    public GetBatchPostResponse getBatchPost(@RequestHeader String accessToken, @RequestParam List<String> postIds) {
+    @GetMapping("/batch")
+    public GetBatchPostResponse getBatchPosts(@RequestHeader String accessToken, @RequestParam List<String> postIds) {
         String requesterUserId = authService.verifyAndFetchUid(accessToken);
 
-        List<Post> posts = postService.getBatchPosts(postIds);
-
+        List<Post> posts = postService.getBatchPosts(postIds, requesterUserId);
         GetBatchPostResponse response = new GetBatchPostResponse();
         response.setPosts(posts);
 
         return response;
     }
 
-    @GetMapping("/getOwnPosts")
+    @GetMapping("/me")
     public GetOwnPostResponse getOwnPosts(@RequestHeader String accessToken) {
-        List<Post> posts = postService.getOwnPosts(accessToken);
+        String requesterUserId = authService.verifyAndFetchUid(accessToken);
+
+        List<Post> posts = postService.getOwnPosts(requesterUserId);
 
         GetOwnPostResponse response = new GetOwnPostResponse();
         response.setPosts(posts);
@@ -96,20 +101,34 @@ public class PostController {
         return response;
     }
 
-    @GetMapping("getComments")
-    public GetPostCommentsResponse getComments(@RequestHeader String accessToken, @RequestParam String postId) {
+    @GetMapping("/{postId}/comments")
+    public GetPostCommentsResponse getComments(@RequestHeader String accessToken, @PathVariable String postId) {
         GetPostCommentsResponse response = new GetPostCommentsResponse();
         response.setPostComments(postService.getPostComments(postId));
 
         return response;
     }
 
-    @PostMapping(value = "/addComment", produces = "application/json")
-    public AddCommentResponse addComment(@RequestHeader String accessToken, @RequestBody AddCommentRequest request) {
+    @PostMapping(value = "/{postId}/comments", produces = "application/json")
+    public AddCommentResponse addComment(@RequestHeader String accessToken, @PathVariable String postId,
+            @RequestBody AddCommentRequest request) {
         String uid = authService.verifyAndFetchUid(accessToken);
-        PostComment postComment = PostComment.create(request.getPostId(), request.getContent(), uid, request.getParentCommentId());
+        PostComment postComment = PostComment.create(postId, request.getContent(), uid,
+                request.getParentCommentId());
         postService.addPostComment(postComment);
 
         return new AddCommentResponse(postComment.getCommentId());
+    }
+
+    @PostMapping("/{postId}/likes")
+    public void likePost(@RequestHeader String accessToken, @PathVariable String postId) {
+        String uid = authService.verifyAndFetchUid(accessToken);
+        postService.likePost(postId, uid);
+    }
+
+    @DeleteMapping("/{postId}/likes")
+    public void unlikePost(@RequestHeader String accessToken, @PathVariable String postId) {
+        String uid = authService.verifyAndFetchUid(accessToken);
+        postService.unlikePost(postId, uid);
     }
 }
