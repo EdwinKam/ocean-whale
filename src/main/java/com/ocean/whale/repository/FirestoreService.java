@@ -1,9 +1,17 @@
 package com.ocean.whale.repository;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -11,14 +19,6 @@ import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
 import com.ocean.whale.exception.WhaleException;
 import com.ocean.whale.exception.WhaleServiceException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class FirestoreService {
@@ -88,4 +88,14 @@ public class FirestoreService {
         // Optionally, you can check the result of the delete operation
         return writeResult.get() != null;
     }
+
+    public void updateDocument(String collectionName, String documentId, Map<String, Object> updates) {
+        try {
+            DocumentReference docRef = firestore.collection(collectionName).document(documentId);
+            ApiFuture<WriteResult> future = docRef.update(updates);
+            future.get();
+        } catch (Exception e) {
+            throw new WhaleServiceException(WhaleException.FIREBASE_ERROR, String.format("failed to update collectionName: %s documentId: %s", collectionName, documentId));
+        }
+    } 
 }

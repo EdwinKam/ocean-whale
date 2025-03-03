@@ -1,14 +1,14 @@
 package com.ocean.whale.model;
 
+import java.util.Map;
+
 import com.ocean.whale.util.IdGenerator;
 import com.ocean.whale.util.ObjectConvertor;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Map;
-import java.util.UUID;
 
 @Setter
 @Getter
@@ -20,9 +20,11 @@ public class Post {
     private String subject;
     private String authorId;
     private long creationTs;
+    private long likes;
+    private boolean isLikedByCurrentUser;
 
     public static Post newPost(String content, String subject, String authorId) {
-        return new Post(IdGenerator.length(8), content, subject, authorId, System.currentTimeMillis());
+        return new Post(IdGenerator.length(8), content, subject, authorId, System.currentTimeMillis(), 0, false);
     }
 
     public static Post fromMap(Map<String, Object> map) {
