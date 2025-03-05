@@ -12,6 +12,7 @@ java 17
 
 - ask app owner for the secret, put the secret in the root folder
 1. https://drive.google.com/file/d/1SUt6lzcDyjZwdrczvbHU4tXa42jtatqV/view?usp=sharing
+2. create application.properties in root footer. Copy from https://docs.google.com/document/d/1iVL6viK4y5p7xeF2v4mbADbPF8fgJ0zIZoar7su6ZOg/edit?usp=sharing
 - [not recommended] Go to firebase console -> project settings -> service accounts -> generate new private key, make sure the json name matches what inside `FirebaseConfig.java`, not sure if everyone else will need to use the new secret
 2. https://drive.google.com/file/d/1h4Qb3oPBk0hX_hXCogrf38ioOmFja_uI/view?usp=sharing, this is application.properties
 Open intellij, just run the main function in WhaleApplication.java
