@@ -13,7 +13,9 @@ import com.ocean.whale.model.PostComment;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.post.PostService;
 import com.ocean.whale.service.view_history.ViewHistoryService;
+
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,10 +67,10 @@ public class PostController {
     public CreatePostResponse createPost(
             @RequestHeader String accessToken, @RequestParam("postContent") String postContent,
             @RequestParam("postSubject") String postSubject,
-            @RequestParam("image") MultipartFile image) {
+            @RequestParam(value = "image", required = false) MultipartFile image) {
 
         String uid = authService.verifyAndFetchUid(accessToken);
-        String postId = postService.createPost(postSubject, postContent, uid, List.of(image));
+        String postId = postService.createPost(postSubject, postContent, uid, image == null ? List.of() : List.of(image));
 
         return new CreatePostResponse(postId);
     }
