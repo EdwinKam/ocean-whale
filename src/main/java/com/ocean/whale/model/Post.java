@@ -1,15 +1,15 @@
 package com.ocean.whale.model;
 
+import java.util.List;
+import java.util.Map;
+
 import com.ocean.whale.util.IdGenerator;
 import com.ocean.whale.util.ObjectConvertor;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Setter
 @Getter
@@ -22,9 +22,10 @@ public class Post {
     private String authorId;
     private long creationTs;
     private List<String> imageUrls;
+    private boolean isLikedByCurrentUser;
 
     public static Post newPost(String content, String subject, String authorId) {
-        return new Post(IdGenerator.length(8), content, subject, authorId, System.currentTimeMillis(), null);
+        return new Post(IdGenerator.length(8), content, subject, authorId, System.currentTimeMillis(), null, false);
     }
 
     public static Post fromMap(Map<String, Object> map) {

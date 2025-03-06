@@ -1,5 +1,22 @@
 package com.ocean.whale.controller;
 
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.ocean.whale.api.CreatePostRequest;
 import com.ocean.whale.api.CreatePostResponse;
 import com.ocean.whale.api.GetOwnPostResponse;
@@ -8,23 +25,6 @@ import com.ocean.whale.model.Post;
 import com.ocean.whale.service.auth.AuthService;
 import com.ocean.whale.service.post.PostService;
 import com.ocean.whale.service.view_history.ViewHistoryService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.junit.runner.RunWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 @ExtendWith(MockitoExtension.class)
@@ -73,28 +73,28 @@ public class PostControllerTest {
 
     @Test
     void readPost() {
-        Mockito.when(postService.getPost(TEST_POST_ID)).thenReturn(post);
+        Mockito.when(postService.getPost(TEST_POST_ID, UID)).thenReturn(post);
 
-        GetPostResponse response = postController.readPost(accessToken, TEST_POST_ID);
+        GetPostResponse response = postController.getPost(accessToken, TEST_POST_ID);
 
         assertEquals(post, response.getPost());
     }
 
-//    @Test
-//    void getBatchPost() {
-//        Mockito.when(postService.readPost(TEST_POST_ID)).thenReturn(post);
-//        Mockito.when(postService.readPost(SECOND_TEST_POST_ID)).thenReturn(secondPost);
-//
-//        GetBatchPostResponse response = postController.getBatchPost(accessToken, List.of(TEST_POST_ID, SECOND_TEST_POST_ID));
-//
-//        assertTrue(response.getPosts().contains(post));
-//        assertTrue(response.getPosts().contains(secondPost));
-//    }
+    // @Test
+    // void getBatchPost() {
+    // Mockito.when(postService.readPost(TEST_POST_ID)).thenReturn(post);
+    // Mockito.when(postService.readPost(SECOND_TEST_POST_ID)).thenReturn(secondPost);
+    //
+    // GetBatchPostResponse response = postController.getBatchPost(accessToken,
+    // List.of(TEST_POST_ID, SECOND_TEST_POST_ID));
+    //
+    // assertTrue(response.getPosts().contains(post));
+    // assertTrue(response.getPosts().contains(secondPost));
+    // }
 
     @Test
     void getOwnPosts() {
-        Mockito.reset(authService); // this function no need authService, clear the stubbing
-        Mockito.when(postService.getOwnPosts(accessToken)).thenReturn(List.of(post, secondPost));
+        Mockito.when(postService.getOwnPosts(UID)).thenReturn(List.of(post, secondPost));
 
         GetOwnPostResponse response = postController.getOwnPosts(accessToken);
 
