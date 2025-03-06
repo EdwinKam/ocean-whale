@@ -12,6 +12,7 @@ import com.ocean.whale.util.ObjectConvertor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,38 +70,19 @@ public class PostService {
   public List<Post> getOwnPosts(String requesterUserId) {
     // allow to get more details in the future because this is post owner
     Filter filter = Filter.equalTo("authorId", requesterUserId);
-    List<Map<String, Object>> listOfMap = firestoreService.getDocuments("post", filter);
-    List<Post> posts = listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, Post.class)).toList();
-
-    List<PostLike> userLikes = getUserLikedPosts(requesterUserId);
-    Set<String> likedPostIds = userLikes.stream().map(PostLike::getPostId).collect(Collectors.toSet());
-
-    posts.forEach(post -> post.setLikedByCurrentUser(likedPostIds.contains(post.getId())));
-
-    return posts;
+    return getPosts(requesterUserId, filter);
   }
 
   public List<Post> getBatchPosts(List<String> postIds, String requesterUserId) {
     Filter filter = Filter.inArray("id", postIds);
-    List<Map<String, Object>> listOfMap = firestoreService.getDocuments("post", filter);
-    List<Post> posts = listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, Post.class)).toList();
-
-    List<PostLike> userLikes = getUserLikedPosts(requesterUserId);
-    Set<String> likedPostIds = userLikes.stream().map(PostLike::getPostId).collect(Collectors.toSet());
-    posts.forEach(post -> post.setLikedByCurrentUser(likedPostIds.contains(post.getId())));
-
-    return posts;
+    return getPosts(requesterUserId, filter);
   }
 
   public Post getPost(String postId, String requesterUserId) {
     Map<String, Object> databaseValue = firestoreService.getDocument("post", postId);
     Post post = Post.fromMap(databaseValue);
-
-    Filter filter = Filter.and(Filter.equalTo("postId", postId),
-        Filter.equalTo("likerId", requesterUserId));
-    List<Map<String, Object>> listOfMap = firestoreService.getDocuments("postLikes", filter);
-    List<Post> posts = listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, Post.class)).toList();
-    post.setLikedByCurrentUser(!posts.isEmpty());
+    Optional<PostLike> postLike = getOptionalPostLike(postId, requesterUserId);
+    post.setLikedByCurrentUser(postLike.isPresent());
 
     return post;
   }
@@ -125,10 +107,8 @@ public class PostService {
 
   public void unlikePost(String postId, String likerId) {
     List<PostLike> userLikes = getUserLikedPosts(likerId);
-    PostLike likeToRemove = userLikes.stream()
-        .filter(like -> like.getPostId().equals(postId))
-        .findFirst()
-        .orElse(null);
+    PostLike likeToRemove =
+        userLikes.stream().filter(like -> like.getPostId().equals(postId)).findFirst().orElse(null);
 
     if (likeToRemove != null) {
       firestoreService.deleteDocument("postLikes", likeToRemove.getLikeId());
@@ -146,5 +126,32 @@ public class PostService {
     Filter filter = Filter.equalTo("likerId", userId);
     List<Map<String, Object>> listOfMap = firestoreService.getDocuments("postLikes", filter);
     return listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, PostLike.class)).toList();
+  }
+
+  public Optional<PostLike> getOptionalPostLike(String postId, String userId) {
+
+    Filter filter = Filter.and(Filter.equalTo("postId", postId), Filter.equalTo("likerId", userId));
+    List<Map<String, Object>> listOfMap = firestoreService.getDocuments("postLikes", filter);
+    List<PostLike> postLikes =
+        listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, PostLike.class)).toList();
+
+    if (postLikes.isEmpty()) {
+      return Optional.empty();
+    } else {
+      return Optional.of(postLikes.get(0));
+    }
+  }
+
+  private List<Post> getPosts(String requesterUserId, Filter filter) {
+    List<Map<String, Object>> listOfMap = firestoreService.getDocuments("post", filter);
+    List<Post> posts = listOfMap.stream().map(m -> ObjectConvertor.fromMap(m, Post.class)).toList();
+
+    List<PostLike> userLikes = getUserLikedPosts(requesterUserId);
+    Set<String> likedPostIds =
+        userLikes.stream().map(PostLike::getPostId).collect(Collectors.toSet());
+
+    posts.forEach(post -> post.setLikedByCurrentUser(likedPostIds.contains(post.getId())));
+
+    return posts;
   }
 }
