@@ -17,6 +17,9 @@ java 17
 2. https://drive.google.com/file/d/1h4Qb3oPBk0hX_hXCogrf38ioOmFja_uI/view?usp=sharing, this is application.properties
 Open intellij, just run the main function in WhaleApplication.java
 
+# How to deploy
+If you added a new secret file, make sure you update your dockerfile, you need to copy the file over to the docker image
+
 # How to test
 
 open browser http://localhost:8080/api/hello. You should see hello world if the server is running properly.
