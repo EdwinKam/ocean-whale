@@ -37,7 +37,9 @@ public class RecommendationController {
         // Verify the token and fetch the user UID
         String uid = authService.verifyAndFetchUid(accessToken);
         // Get recommendations based on the UID
-        return new GetRecommendationsResponse(recommendationService.getRecommendations(uid));
+        var recList = new PostRecommendationList(postService.getAllPosts().stream().map(Post::getId).toList());
+//        return new GetRecommendationsResponse(recommendationService.getRecommendations(uid));
+        return new GetRecommendationsResponse(recList); //return all post for now
     }
 
     @PostMapping("/addRecommensationsForTesting")
