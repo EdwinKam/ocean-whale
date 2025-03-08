@@ -1,23 +1,26 @@
 package com.ocean.whale.service.post;
 
-import com.google.cloud.firestore.Filter;
-import com.ocean.whale.exception.WhaleException;
-import com.ocean.whale.exception.WhaleServiceException;
-import com.ocean.whale.model.Post;
-import com.ocean.whale.model.PostComment;
-import com.ocean.whale.model.PostLike;
-import com.ocean.whale.repository.FirestoreService;
-import com.ocean.whale.service.ImageStorageService;
-import com.ocean.whale.util.ObjectConvertor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.google.cloud.firestore.Filter;
+import com.ocean.whale.exception.WhaleException;
+import com.ocean.whale.exception.WhaleServiceException;
+import com.ocean.whale.model.Post;
+import com.ocean.whale.model.PostComment;
+import com.ocean.whale.model.PostLike;
+import com.ocean.whale.model.PostRecommendationList;
+import com.ocean.whale.repository.FirestoreService;
+import com.ocean.whale.service.ImageStorageService;
+import com.ocean.whale.util.ObjectConvertor;
 
 @Service
 public class PostService {
@@ -30,8 +33,8 @@ public class PostService {
     this.imageStorageService = imageStorageService;
   }
 
-  public String createPost(
-      String postSubject, String postContent, String authorId, List<MultipartFile> images) {
+  public String createPost(String postSubject, String postContent, String authorId,
+      List<MultipartFile> images) {
     Post post = Post.newPost(postContent, postSubject, authorId);
     List<String> imageUrls = savePostImages(post.getId(), images);
     post.setImageUrls(imageUrls);
@@ -57,13 +60,12 @@ public class PostService {
   public List<Post> getAllPosts() {
     try {
       return firestoreService.getDocuments("post").stream()
-          .map(p -> ObjectConvertor.fromMap(p, Post.class))
-          .toList();
+          .map(p -> ObjectConvertor.fromMap(p, Post.class)).toList();
     } catch (WhaleServiceException e) {
       throw e;
     } catch (Exception e) {
-      throw new WhaleServiceException(
-          WhaleException.BAD_DATA_ERROR, "getAllPost parsing data error");
+      throw new WhaleServiceException(WhaleException.BAD_DATA_ERROR,
+          "getAllPost parsing data error");
     }
   }
 
@@ -151,6 +153,15 @@ public class PostService {
         userLikes.stream().map(PostLike::getPostId).collect(Collectors.toSet());
 
     posts.forEach(post -> post.setLikedByCurrentUser(likedPostIds.contains(post.getId())));
+
+    return posts;
+  }
+
+  public List<Post> getRecommendations(String requesterUserId) {
+    Map<String, Object> databaseValue =
+        firestoreService.getDocument("recommendations", requesterUserId);
+    PostRecommendationList postRecommendationList = PostRecommendationList.fromMap(databaseValue);
+    List<Post> posts = getBatchPosts(postRecommendationList.getRecommendations(), requesterUserId);
 
     return posts;
   }
